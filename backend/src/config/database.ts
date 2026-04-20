@@ -1,6 +1,8 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
+import dotenv from "dotenv";
+dotenv.config();
 
 export const AppDataSource = new DataSource({
     type: "postgres",
@@ -9,8 +11,8 @@ export const AppDataSource = new DataSource({
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
-    entities: ["../../dist/entities/*.ts"],
-    migrations: ["../../dist/migrations/*.ts"],
+    entities: ["dist/entities/*.js"],
+    migrations: ["dist/migrations/*.js"],
     synchronize: false,
     logging: true,
     extra: { min: 2, max: 5 },

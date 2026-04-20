@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { Chat } from "./chat.entity";
 import { User } from "./user.entity";
-import { MessageStatus } from "./message-status.entity.ts";
+import { MessageStatus } from "./message-status.entity";
 
 export enum ParticipantRole {
     ADMIN = "admin",
