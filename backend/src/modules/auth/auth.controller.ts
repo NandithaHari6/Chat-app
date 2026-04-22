@@ -16,16 +16,16 @@ export class AuthController {
             // Store the state in a short-lived, HttpOnly cookie
             res.cookie("oauth_state", state, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
+                secure: false,
                 sameSite: "lax",
-                maxAge: 10 * 60 * 1000, // 10 minutes
+                maxAge: 10 * 60 * 10000, // 10 minutes
             });
 
             // Get the URL from the service
             const url =  await this.authService.getRedirectUrl(state);
 
             // Option B: Return the URL to the frontend so it can redirect
-            res.json({ url });
+            res.redirect(url);
         } catch (error) {
             console.error("Error generating Google URL:", error);
             res.status(500).json({ error: "Failed to generate login URL" });
@@ -40,7 +40,6 @@ export class AuthController {
         try {
             const { code, state } = req.query;
             const cookieState = req.cookies?.oauth_state;
-
             // 1. Verify CSRF state
             if (!state || !cookieState || state !== cookieState) {
                 return res.status(403).json({ error: "CSRF validation failed" });
@@ -60,13 +59,13 @@ export class AuthController {
             res.cookie("auth_token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
+                sameSite: "none",
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             });
 
             // 4. Redirect the user to the frontend application (e.g., the chat dashboard)
             const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
-            res.redirect(`${frontendUrl}/chat`);
+            res.redirect(`${frontendUrl}/home`);
             
         } catch (error) {
             console.error("Error in Google callback:", error);

@@ -1,4 +1,5 @@
 import { User } from "../../entities/user.entity";
+import { Chat } from "../../entities/chat.entity";
 import { AppError } from "../../utils/appError";
 import { CreateUserInput, UserRepository } from "./user.repository";
 
@@ -20,6 +21,7 @@ export class UserService {
         }
         return user;
     }
+
     findUserById = async (id: number): Promise<User | null> => {
         const user = await this.userRepository.findUserById(id);
         if (!user) {
@@ -45,4 +47,36 @@ export class UserService {
         return this.userRepository.updateUser(id, userToUpdate);
     }
 
+    getProfile = async (userId: number): Promise<Pick<User, "id" | "name" | "email" | "bio" | "displayPicture">> => {
+        const user = await this.userRepository.findUserById(userId);
+        if (!user) {
+            throw new AppError("User not found", 404);
+        }
+        return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            bio: user.bio,
+            displayPicture: user.displayPicture,
+        };
+    }
+    getAllUsers = async (): Promise<User[]> => {
+        return this.userRepository.findAllUsers();
+    }
+
+    getPublicProfile = async (userId: number): Promise<Pick<User, "id" | "name" | "bio" | "displayPicture">> => {
+        const user = await this.userRepository.findUserById(userId);
+        if (!user) {
+            throw new AppError("User not found", 404);
+        }
+        return {
+            id: user.id,
+            name: user.name,
+            bio: user.bio,
+            displayPicture: user.displayPicture,
+        };
+    }
+
+   
 }
+

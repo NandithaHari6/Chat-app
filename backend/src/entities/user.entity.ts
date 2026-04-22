@@ -4,7 +4,7 @@ import { ChatParticipant } from "./chat-participant.entity";
 import { Message } from "./message.entity";
 import { FriendRequest } from "./friend-request.entity";
 
-@Entity()
+@Entity("users")
 export class User extends AbstractEntity {
     @Column()
     name!: string;

@@ -1,5 +1,7 @@
 import { Repository } from "typeorm";
 import { User } from "../../entities/user.entity";
+import { Chat } from "../../entities/chat.entity";
+import { AppDataSource } from "../../config/database";
 
 export type CreateUserInput = {
     email: string;
@@ -25,6 +27,9 @@ export class UserRepository {
     findUserById = async (id: number): Promise<User | null> => {
         return this.userRepository.findOne({ where: { id } });
     }
+    findAllUsers = async (): Promise<User[]> => {
+        return this.userRepository.find();
+    }
 
     updateUser = async (id: number, user: User): Promise<User> => {
         return this.userRepository.save({ ...user, id });
@@ -33,5 +38,7 @@ export class UserRepository {
     deleteUser = async (id: number): Promise<void> => {
         await this.userRepository.delete(id);
     }
+
+  
 }
 

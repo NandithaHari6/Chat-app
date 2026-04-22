@@ -17,7 +17,7 @@ export class AuthService {
 
 
     getRedirectUrl = async (state: string): Promise<string> => {
-        return this.googleClient.generateAuthUrl({
+        return await this.googleClient.generateAuthUrl({
             access_type: "offline",
             prompt: "consent",
             scope: [
@@ -48,19 +48,25 @@ export class AuthService {
         });
 
         const payload = ticket.getPayload();
+        console.log("payload", payload);
 
         if (!payload || !payload.email || !payload.name) {
-            throw new Error("Invalid Google payload");
+            throw new AppError("Invalid Google payload", 400);
         }
-
-        let userDetails: User | null = await this.userService.findUserByEmail(payload.email);
-
+        let userDetails: User | null;
+        try {
+            userDetails = await this.userService.findUserByEmail(payload.email);
+        } catch (error) {
+            userDetails = null;
+        }
         if (!userDetails) {
-            userDetails = await this.userService.createUser({
+         try {  userDetails = await this.userService.createUser({
                 email: payload.email,
                 name: payload.name || payload.email.split("@")[0],
                 displayPicture: payload.picture || undefined,
-            });
+            });} catch (error) {
+                throw new AppError("Failed to create user", 500);
+            }
         }
         // 4. Generate our application's JWT
         const appToken = jwt.sign(
